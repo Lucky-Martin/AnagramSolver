@@ -11,4 +11,10 @@
     <PackageReference Include="NetSpell" Version="2.1.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="english_dictionary.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,25 +1,43 @@
-﻿//using NetSpell.SpellChecker;
-//using NetSpell.SpellChecker.Dictionary;
-
-//WordDictionary oDict = new WordDictionary();
-
-//oDict.DictionaryFile = Path.Combine(Environment.CurrentDirectory, "dictionaries/en-US.dic");
-//oDict.Initialize();
-//Spelling oSpell = new Spelling();
-//oSpell.Dictionary = oDict;
+﻿using System.Text;
 
 Console.WriteLine("Enter your input string");
 string input = Console.ReadLine();
 List<string> foundWords = new List<string>();
+Dictionary<string, string> dictionary = new Dictionary<string, string>();
+string vowels = "aeiouy";
+
+string fileName = "english_dictionary.txt";
+using (var fileStream = File.OpenRead(fileName))
+using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, true))
+{
+    String line;
+    while ((line = streamReader.ReadLine()) != null)
+    {
+        try
+        {
+            dictionary.Add(line.ToLower(), line.ToLower());
+        }
+        catch (Exception) { }
+    }
+}
 
 while (input.Length > 2)
 {
+    Console.WriteLine("starting");
     var anagrams = GenerateAnagram(input);
     FindWordsInAnagram(anagrams);
-    input = input.Remove(input.Length - 1, 1);
+    Console.WriteLine("done");
+    //for (int i = 0; i < input.Length; i++)
+    //{
+    //    if (!vowels.Contains(input[i]))
+    //    {
+    //        input = input.Remove(i, 1);
+    //        break;
+    //    }
+    //}
 }
 
-foreach (string word in foundWords)
+foreach(string word in foundWords)
 {
     Console.WriteLine(word);
 }
@@ -31,24 +49,10 @@ void FindWordsInAnagram(IEnumerable<string> anagrams)
         if (word == input)
             continue;
 
-        HttpClient httpClient = new HttpClient();
-        httpClient.Timeout = TimeSpan.FromSeconds(5);
-
-        string url = "https://api.dictionaryapi.dev/api/v2/entries/en_US/" + word;
-        var message = new HttpRequestMessage(HttpMethod.Get, url);
-        message.Content = new StringContent(string.Empty);
-
-        var response = httpClient.Send(message);
-
-        if (response.IsSuccessStatusCode)
+        if (dictionary.ContainsKey(word))
         {
             foundWords.Add(word);
         }
-
-        //if (oSpell.TestWord(word))
-        //{
-        //    foundWords.Add(word);
-        //}
     }
 }
 
