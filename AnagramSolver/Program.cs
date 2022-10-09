@@ -1,10 +1,11 @@
-﻿using System.Text;
+﻿using System.Collections;
+using System.Text;
 
 Console.WriteLine("Enter your input string");
 string input = Console.ReadLine();
 List<string> foundWords = new List<string>();
-Dictionary<string, string> dictionary = new Dictionary<string, string>();
-string vowels = "aeiouy";
+IDictionary dictionary = new Dictionary<string, string>();
+string _vowels = "aeiouy";
 
 string fileName = "english_dictionary.txt";
 using (var fileStream = File.OpenRead(fileName))
@@ -23,23 +24,54 @@ using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, true))
 
 while (input.Length > 2)
 {
-    Console.WriteLine("starting");
     var anagrams = GenerateAnagram(input);
     FindWordsInAnagram(anagrams);
-    Console.WriteLine("done");
-    //for (int i = 0; i < input.Length; i++)
-    //{
-    //    if (!vowels.Contains(input[i]))
-    //    {
-    //        input = input.Remove(i, 1);
-    //        break;
-    //    }
-    //}
+    
+    List<int> consonants = findConsonants();
+    List<int> vowels = findVowels();
+
+    if (consonants.Count > vowels.Count)
+    {
+        input = input.Remove(consonants[0], 1);
+    }
+    else
+    {
+        input = input.Remove(vowels[0], 1);
+    }
+    Console.WriteLine("Removed a letter");
 }
 
 foreach(string word in foundWords)
 {
     Console.WriteLine(word);
+}
+
+List<int> findConsonants()
+{
+    List<int> consonants = new List<int>();
+    for(int i = 0; i < input.Length; i++)
+    {
+        if (!_vowels.Contains(input[i]))
+        {
+            consonants.Add(i);
+        }
+    }
+
+    return consonants;
+}
+
+List<int> findVowels()
+{
+    List<int> vowels = new List<int>();
+    for (int i = 0; i < input.Length; i++)
+    {
+        if (_vowels.Contains(input[i]))
+        {
+            vowels.Add(i);
+        }
+    }
+
+    return vowels;
 }
 
 void FindWordsInAnagram(IEnumerable<string> anagrams)
@@ -49,7 +81,7 @@ void FindWordsInAnagram(IEnumerable<string> anagrams)
         if (word == input)
             continue;
 
-        if (dictionary.ContainsKey(word))
+        if (dictionary.Contains(word))
         {
             foundWords.Add(word);
         }
